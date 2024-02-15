@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
 const User = ({ user }) => {
   return (
     <tr>
@@ -13,7 +29,6 @@ const User = ({ user }) => {
         </a>
       </td>
       <td>{user.name}</td>
-      <td>{user.followers}</td>
     </tr>
   );
 };
@@ -22,6 +37,7 @@ const User = ({ user }) => {
 const App = () => {
   const [input, setInput] = useState("");
   const [results, setResults] = useState([]);
+  const debouncedInput = useDebounce(input, 300);
 
   const handleChange = (e) => {
     setInput(e.target.value);
@@ -34,25 +50,24 @@ const App = () => {
       );
 
       const items = response?.data?.items;
-      console.log(items);
-      const sortedItems = items.sort(
-        (a, b) => b.followers - a.followers
-      );
-
-      setResults(sortedItems);
+      setResults(items);
     } catch (error) {
       console.error(error);
     }
   };
 
+  useEffect(() => {
+    if (debouncedInput) {
+      fetchData();
+    } else {
+      setResults([]);
+    }
+  }, [debouncedInput]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     fetchData();
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return (
     <div className="App">
