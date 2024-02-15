@@ -46,7 +46,14 @@ const App = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `https://api.github.com/search/users?q=${input}`
+        `https://api.github.com/search/users?q=${input}`, {
+          params: {
+            page: 1,
+            per_page: 50,
+            sort: 'followers',
+            order: 'desc',
+          }
+        }
       );
 
       const items = response?.data?.items;
@@ -64,22 +71,16 @@ const App = () => {
     }
   }, [debouncedInput]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetchData();
-  };
-
   return (
     <div className="App">
       <h1>GitHub User Search</h1>
-      <form onSubmit={handleSubmit}>
+      <form>
         <input
           type="text"
           value={input}
           onChange={handleChange}
           placeholder="Enter a user name"
         />
-        <button type="submit">Search</button>
       </form>
       <table>
         <thead>
