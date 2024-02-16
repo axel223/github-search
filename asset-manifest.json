@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/github-search/static/css/main.3f8a34cb.css",
+    "main.js": "/github-search/static/js/main.a50f2eeb.js",
+    "static/media/Mona-Sans.woff2": "/github-search/static/media/Mona-Sans.2f40792e491758879b85.woff2",
+    "index.html": "/github-search/index.html",
+    "main.3f8a34cb.css.map": "/github-search/static/css/main.3f8a34cb.css.map",
+    "main.a50f2eeb.js.map": "/github-search/static/js/main.a50f2eeb.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3f8a34cb.css",
+    "static/js/main.a50f2eeb.js"
+  ]
+}
