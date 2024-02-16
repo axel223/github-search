@@ -86,8 +86,6 @@ const App = () => {
       );
 
       const items = searchResponse?.data?.items;
-      
-      console.log(items);
       setResults(items);
     } catch (error) {
       console.error(error);
