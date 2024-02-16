@@ -19,44 +19,75 @@ const useDebounce = (value, delay) => {
 
 const User = ({ user }) => {
   return (
-    <tr>
+    <tr className="user">
       <td>
-        <img src={user.avatar_url} alt={user.login} width="50" />
+        <img
+          className="avatar"
+          src={user.avatar_url}
+          alt={user.login}
+          width="50"
+        />
       </td>
       <td>
-        <a href={user.html_url} target="_blank" rel="noreferrer">
+        <a
+          className="name"
+          href={user.html_url}
+          target="_blank"
+          rel="noreferrer"
+        >
           {user.login}
         </a>
       </td>
-      <td>{user.name}</td>
     </tr>
   );
 };
 
-
 const App = () => {
   const [input, setInput] = useState("");
   const [results, setResults] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
   const debouncedInput = useDebounce(input, 300);
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     setInput(e.target.value);
+    setPage(1);
+  };
+
+  const handlePrevPage = () => {
+    setPage((page) => {
+      if (page === 1) return page;
+      else return page - 1;
+    });
+  };
+
+  const handleNextPage = () => {
+    setPage((page) => page + 1);
+  };
+
+  const handlePageLimit = (e) => {
+    const value = e.target.value;
+    setLimit(parseInt(value));
   };
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        `https://api.github.com/search/users?q=${input}`, {
+      const searchResponse = await axios.get(
+        `https://api.github.com/search/users?q=${input}`,
+        {
           params: {
-            page: 1,
-            per_page: 50,
-            sort: 'followers',
-            order: 'desc',
-          }
+            page: page,
+            per_page: limit,
+            sort: "followers",
+            order: "desc",
+          },
         }
       );
 
-      const items = response?.data?.items;
+      const items = searchResponse?.data?.items;
+      
+      console.log(items);
       setResults(items);
     } catch (error) {
       console.error(error);
@@ -69,32 +100,60 @@ const App = () => {
     } else {
       setResults([]);
     }
-  }, [debouncedInput]);
+  }, [debouncedInput, page, limit]);
 
   return (
     <div className="App">
-      <h1>GitHub User Search</h1>
-      <form>
+      <div className="header">
+        <h1 className="title">Search Github User</h1>
+      </div>
+      <form className="form card" onSubmit={handleInputChange}>
         <input
           type="text"
+          name="input"
+          id="input"
           value={input}
-          onChange={handleChange}
-          placeholder="Enter a user name"
+          onChange={handleInputChange}
+          onSubmit={handleInputChange}
+          placeholder="Find a user..."
         />
       </form>
-      <table>
-        <thead>
-          <tr>
-            <th>Avatar</th>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {results.map((user) => (
-            <User key={user.id} user={user} />
-          ))}
-        </tbody>
-      </table>
+      <div className="search-result">
+        <div className="options">
+          <label>
+            <small>Per Page</small>
+            <select onChange={handlePageLimit}>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+              <option value="40">40</option>
+            </select>
+          </label>
+          <div className="pagination">
+            <button onClick={handlePrevPage}>{"< Prev"}</button>
+            <button onClick={handleNextPage}>{"Next >"}</button>
+          </div>
+        </div>
+        ...
+        {results?.length != 0
+          ? [
+              <table className="result">
+                <thead>
+                  <tr className="result-header">
+                    <th>
+                      <p>People</p>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results.map((user) => (
+                    <User key={user.id} user={user} />
+                  ))}
+                </tbody>
+              </table>,
+            ]
+          : []}
+      </div>
     </div>
   );
 };
