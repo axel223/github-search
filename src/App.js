@@ -133,7 +133,7 @@ const App = () => {
           </div>
         </div>
         ...
-        {results?.length != 0
+        {results?.length !== 0
           ? [
               <table className="result">
                 <thead>
